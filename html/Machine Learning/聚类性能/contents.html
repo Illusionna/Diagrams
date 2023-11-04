@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>聚类性能 &#8212; HOME v1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=4f649999" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=039e1c02" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=0ec76b63"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script async="async" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="About" href="../../About.html" />
+    <link rel="prev" title="Machine Learning" href="../subIndex.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>聚类性能<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h1>
+<section id="i-davies-bouldin-index">
+<h2>Ⅰ. Davies-Bouldin Index<a class="headerlink" href="#i-davies-bouldin-index" title="Permalink to this heading">¶</a></h2>
+<p>It estimates the cohesion based on the distance from the points in a cluster to its centroid and the separation based on the distance between centroids. It is defined as:</p>
+<p><span class="math notranslate nohighlight">\({\rm DBI}(\mathbb{C})=\dfrac{1}{K}\sum\limits_{C_k\in\mathbb{C}}\max\limits_{C_j\in\mathbb{C}\backslash C_k}\left\{ \dfrac{\dfrac{1}{|C_k|}\sum\limits_{x_i\in C_k}d(x_i,\overline{C_k})+\dfrac{1}{|C_j|}\sum\limits_{x_i\in C_j}d(x_i,\overline{C_j})}{d(\overline{C_k},\overline{C_j})} \right\}\)</span></p>
+</section>
+<section id="ii-dunn-index">
+<h2>Ⅱ. Dunn Index<a class="headerlink" href="#ii-dunn-index" title="Permalink to this heading">¶</a></h2>
+<p>It is a ratio-type index where the cohesion is estimated by the nearest neighbor distance and the separation by the maximum cluster diameter. The original index is defined as:</p>
+<p><span class="math notranslate nohighlight">\({\rm DI}(\mathbb{C})=\dfrac{\min\limits_{C_k\in\mathbb{C}}\left\{ \min\limits_{C_j\in\mathbb{C}\backslash C_k}\left[ \min\limits_{x_i\in C_k}\min\limits_{x_j\in C_j}\{ d(x_i,x_j) \} \right] \right\}}{\max\limits_{C_k\in\mathbb{C}}\left\{ \max\limits_{x_i,x_j\in C_k}\left[d(x_i,x_j)\right] \right\} }\)</span></p>
+<p><span class="math notranslate nohighlight">\({\rm where}\ \ \min\limits_{x_i\in C_k}\min\limits_{x_j\in C_j}\{ d(x_i,x_j)\}=\min\limits_{x_i\in C_k;x_j\in C_j}\{ d(x_i,x_j)\}\)</span></p>
+</section>
+<section id="iii-silhouette-index">
+<h2>Ⅲ.  Silhouette Index<a class="headerlink" href="#iii-silhouette-index" title="Permalink to this heading">¶</a></h2>
+<p>This index is a normalized summation-type index. The cohesion is measured based on the distance between all the points in the same cluster and the separation is based on the nearest neighbor distance. It is defined as:</p>
+<p><span class="math notranslate nohighlight">\({\rm Sil}(\mathbb{C})=\dfrac{1}{N}\sum\limits_{C_k\in\mathbb{C}}\sum\limits_{x_i\in C_k}\dfrac{\min\limits_{C_j\in\mathbb{C}\backslash C_k}\left[ \dfrac{1}{|C_j|}\sum\limits_{x_j\in C_j}d(x_i,x_j) \right]-\dfrac{1}{|C_k|}\sum\limits_{x_j\in C_k}d(x_i,x_j)}{\max\left\{ \dfrac{1}{|C_k|}\sum\limits_{x_j\in C_k}d(x_i,x_j),\min\limits_{C_j\in\mathbb{C}\backslash C_k}\left[ \dfrac{1}{|C_j|}\sum\limits_{x_j\in C_j}d(x_i,x_j) \right] \right\}}\)</span></p>
+<p><span class="math notranslate nohighlight">\({\rm where}\ \ \sum\limits_{C_k\in\mathbb{C}}\sum\limits_{x_i\in C_k}\Longleftrightarrow \sum\limits_{C_k\in\mathbb{C};x_i\in C_k}\)</span></p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="../../index.html">HOME</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../Numerical%20Analysis/subIndex.html">Numerical Analysis</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../subIndex.html">Machine Learning</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">聚类性能</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../About.html">About</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../subIndex.html">Machine Learning</a><ul>
+      <li>Previous: <a href="../subIndex.html" title="previous chapter">Machine Learning</a></li>
+      <li>Next: <a href="../../About.html" title="next chapter">About</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Illusionna.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
