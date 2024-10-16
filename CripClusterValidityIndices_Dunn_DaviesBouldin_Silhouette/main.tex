@@ -1,0 +1,146 @@
+\documentclass{article}
+
+\usepackage[fontsize=11pt]{fontsize}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{
+	amsmath,
+	amssymb,
+	mathrsfs
+}
+\usepackage{bm}
+\usepackage{datetime}
+\usepackage{listings}
+\usepackage{tikz}
+
+\linespread{1.2}
+
+\geometry{
+    a4paper,
+    left = 3.5cm,
+    right = 3.5cm,
+    top = 2cm,
+    bottom = 2.8cm
+}
+
+\hypersetup{
+	colorlinks=true,
+	% linkcolor=cyan,
+	linkcolor=black,
+	filecolor=blue,      
+	% urlcolor=red,
+	citecolor=cyan,
+}
+
+\lstset{
+    extendedchars=false,
+	columns = flexible,
+	breaklines,
+	showstringspaces = false,
+	basicstyle = \normalsize,
+	numbers = left,
+	numberstyle = \tiny, 
+	keywordstyle = \color{ blue!70},
+	commentstyle = \color{red!50!green!50!blue!50}, 
+	frame = shadowbox, 
+	rulesepcolor = \color{ red!20!green!20!blue!20} ,
+	xleftmargin=2em,xrightmargin=2em, aboveskip=1em,belowskip=1em,
+	framexleftmargin=2em,framexrightmargin=2em,
+	language = Python
+}
+
+\newcommand*{\shallowRed}{\color[rgb]{1 0.2 0.5}}
+\definecolor{shallowRed}{rgb}{1 0.2 0.5}
+\renewcommand\thesection{\Roman{section}.}
+
+% -------------------------------
+% -------------------------------
+% -------------------------------
+
+\begin{document}
+% -------------------------------
+\title{Crisp cluster validity indices:\\ Dunn, Davies-Bouldin and Silhouette}
+\author{Illusionna}
+\date{\tt\small 12:36, Tuesday $\tt 12^{\tt th}$ September, 2023}
+% -------------------------------
+\maketitle
+% -------------------------------
+\vspace*{-16em}
+% -------------------------------
+\begin{tikzpicture}
+    \node at (12.5,0){
+        \shallowRed\huge\href{
+            https://github.com/Illusionna/Illusion
+        }{$\bm\aleph$}
+    };
+    \draw [white] (0,0) -- (0,0);
+\end{tikzpicture}
+% -------------------------------
+\vspace*{12em}
+% -------------------------------
+% -------------------------------
+
+{\color[rgb]{0.5 0.5 0.5}\it
+At the beginning of this article, I appreciate the scholar $\boldsymbol{Joaquim\ Viegas}$ from the University of Lisbo in Portugal, sincerely. It is because of his article that I have solved some problems about Dunn index. Thanks for your work!
+}
+
+
+\thispagestyle{empty}
+\section{Definition}
+Adapted from Arbelaitz et al. (2003) \cite{ref1}.
+
+Dataset $\bm X$ of $N$ objects (samples) represented as objects (samples) in a p-dimensional space:
+\[ \bm{X}=[\overrightarrow{x_1},\overrightarrow{x_2},\dots,\overrightarrow{x_N}]^{\top}=[\overrightarrow{{\rm sample}_1},\overrightarrow{{\rm sample}_2},\dots,\overrightarrow{{\rm sample}_N}]^{\top}\subseteq\mathfrak{R}^p \]
+\[ \forall i\in\{1,2,\dots,N\}\hookrightarrow\overrightarrow{x_i}=[a_{i1},a_{i2},\dots,a_{ip}] \]
+
+A partition or clustering in $\bm X$ is a set of disjoint clusters that partition $\bm X$ into $K$ groups:
+\[ \mathbb{C}=\{C_1,C_2,\dots,C_K\}\ \ {\rm where}\ \ \forall k\ne j \hookrightarrow \mathop{\cup}\limits_{C_k\in \mathbb{C}}C_k=\bm{X},\ C_k\cap C_j=\bm{\varnothing} \]
+% \[ {\rm where}\ \ \forall k\ne j \hookrightarrow \mathop{\cup}\limits_{C_k\in \mathbb{C}}C_k=\bm{X},\ C_k\cap C_j=\bm{\varnothing} \]
+
+The centroid of a cluster $C_k$ is its mean vector:
+\[ \overline{C_k} =\dfrac{\sum\limits_{x_i\in C_k}x_i}{|C_k|} \]
+
+Dataset mean vector:
+\[ \overline{\bm X}=\dfrac{\sum\limits_{x_i\in \bm X}x_i}{N} \]
+
+Euclidean distance:
+\[ d(x_i,x_k)=\sqrt{\sum\limits_{j=1}^p(x_{ij}-x_{kj})} \]
+
+
+\section{Davies-Bouldin Index (DBI$\downarrow$) \cite{ref2}}
+It estimates the cohesion based on the distance from the points in a cluster to its centroid and the separation based on the distance between centroids. It is defined as:
+\[ {\rm DBI}(\mathbb{C})=\dfrac{1}{K}\sum\limits_{C_k\in\mathbb{C}}\max\limits_{C_j\in\mathbb{C}\backslash C_k}\left\{ \dfrac{\dfrac{1}{|C_k|}\sum\limits_{x_i\in C_k}d(x_i,\overline{C_k})+\dfrac{1}{|C_j|}\sum\limits_{x_i\in C_j}d(x_i,\overline{C_j})}{d(\overline{C_k},\overline{C_j})} \right\} \]
+
+
+\section{Dunn Index (DI$\uparrow$) \cite{ref3}}
+It is a ratio-type index where the cohesion is estimated by the nearest neighbor distance and the separation by the maximum cluster diameter. The original index is defined as:
+\[ {\rm DI}(\mathbb{C})=\dfrac{\min\limits_{C_k\in\mathbb{C}}\left\{ \min\limits_{C_j\in\mathbb{C}\backslash C_k}\left[ \min\limits_{x_i\in C_k}\min\limits_{x_j\in C_j}\{ d(x_i,x_j) \} \right] \right\}}{\max\limits_{C_k\in\mathbb{C}}\left\{ \max\limits_{x_i,x_j\in C_k}\left[d(x_i,x_j)\right] \right\} } \]
+\[ {\rm where}\ \ \min\limits_{x_i\in C_k}\min\limits_{x_j\in C_j}\{ d(x_i,x_j)\}=\min\limits_{x_i\in C_k;x_j\in C_j}\{ d(x_i,x_j)\} \]
+
+
+\section{Silhouette Index (Sil$\uparrow$) \cite{ref4}}
+This index is a normalized summation-type index. The cohesion is measured based on the distance between all the points in the same cluster and the separation is based on the nearest neighbor distance. It is defined as:
+\[ {\rm Sil}(\mathbb{C})=\dfrac{1}{N}\sum\limits_{C_k\in\mathbb{C}}\sum\limits_{x_i\in C_k}\dfrac{\min\limits_{C_j\in\mathbb{C}\backslash C_k}\left[ \dfrac{1}{|C_j|}\sum\limits_{x_j\in C_j}d(x_i,x_j) \right]-\dfrac{1}{|C_k|}\sum\limits_{x_j\in C_k}d(x_i,x_j)}{\max\left\{ \dfrac{1}{|C_k|}\sum\limits_{x_j\in C_k}d(x_i,x_j),\min\limits_{C_j\in\mathbb{C}\backslash C_k}\left[ \dfrac{1}{|C_j|}\sum\limits_{x_j\in C_j}d(x_i,x_j) \right] \right\}} \]
+\[ {\rm where}\ \ \sum\limits_{C_k\in\mathbb{C}}\sum\limits_{x_i\in C_k}\Longleftrightarrow \sum\limits_{C_k\in\mathbb{C};x_i\in C_k} \]
+
+
+
+
+
+\thispagestyle{empty}
+\begin{thebibliography}{12}
+	\bibitem{ref1} Olatz Arbelaitz, Ibai Gurrutxaga, Javier Muguerza, Jes$\rm\acute{u}$s M. P$\rm\acute{e}$rez, andI$\rm\tilde{n}$igo Perona. An extensive comparative study of cluster validity indices. {\it Pattern Recognition}, 46(1):243-256, January 2013. cvi multiple.
+
+	\bibitem{ref2} David L. Davies and Donald W. Bouldin. A cluster separation measure. {\it Pattern Analysis and Machine Intelligence, IEEE Transactions on}, (2):224-227, 1979. bouldin cvi.
+
+	\bibitem{ref3} C Dunn. A fuzzy relative of the ISODATA process and its use in detecting compact well-separated clusters. {\it Journal of Cybernetics}, 3(3):32-57, 1973. dunn cvi.
+	
+	\bibitem{ref4} Peter Rousseeuw. Silhouettes: A graphical aid to the interpretation and validation of cluster analysis. {\it Journal of Computational and Applied Mathematics}, 20:53-65, November 1987. sil cvi.
+\end{thebibliography}
+
+
+
+
+
+\end{document}
