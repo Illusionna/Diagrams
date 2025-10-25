@@ -1,0 +1,154 @@
+% pip install pygments
+% pygmentize -V
+
+\documentclass[draft]{article}
+
+\usepackage{bm}
+\usepackage{ctex}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{minted}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{tcolorbox}
+\usepackage[fontsize = 12pt]{fontsize}
+
+\tcbuselibrary{minted}
+\usemintedstyle{paraiso-dark}
+
+\geometry{
+    a4paper,
+    left = 3cm,
+    right = 3cm,
+    top = 3cm,
+    bottom = 3cm
+}
+
+\title{实验报告：词向量训练}
+\author{Illusionna \quad xxxxx \quad yyyyy 学院}
+\date{\tt\today}
+
+
+
+\begin{document}
+
+\maketitle
+
+\section{模型结构}
+采用 ``A neural probabilistic language model'' 论文中的 NNLM 神经网络语言模型, 一共分为三大层: 特征层, 隐藏层, 输出层.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics*[scale=0.25]{./fig/model.pdf}
+%     \caption{NNLM 模型架构}
+% \end{figure}
+
+其中, 参数空间 $\bm{\Theta}$ 如下:
+\[ \bm{\Theta} = (\bm{b},\ \bm{d},\ \bm{W},\ \bm{U},\ \bm{H},\ \bm{C}) \]
+
+$\bm{C}$ 是词嵌入矩阵, 样本量 $|V|$ 是词汇表包含词的总个数, 嵌入维度是常数 $m$ 维, 本次作业的目标即\textbf{训练词向量}矩阵. 特征层 $\bm{W}$ 是 $m(n - 1)\times|V|$ 维度. 隐藏层 $\bm{H}$ 是 $m(n-1)\times h$ 维度. 输出层 $\bm{U}$ 是 $h\times|V|$ 维度. 已知前 $n-1$ 个单词, 预测第 $n$ 个单词. 模型的输入输出满足论文核心公式:
+\[ \bm{y} = \bm{b} + \bm{W}\bm{x} + \bm{U}\tanh(\bm{d} + \bm{H}\bm{x}) \]
+
+\begin{itemize}
+    \item $h$: 隐藏层神经元的个数.
+    \item $m$: 词向量长度.
+    \item $\bm{b}$: 输出层偏置, $|V|$ 个元素的向量.
+    \item $\bm{d}$: 隐藏层偏置, 向量元素个数与隐藏层神经元个数相同.
+\end{itemize}
+
+
+
+\section{训练方式}
+
+\paragraph*{计算设备}~{}
+
+\begin{tcblisting}{
+    listing engine = minted,
+    boxrule = 0.1mm,
+    colback = blue!5!white,
+    colframe = blue!75!black,
+    listing only,
+    left = 5mm,
+    minted language = python,
+    minted style = paraiso-dark,
+    minted options = {bgcolor = black, fontsize = \small, breaklines, autogobble, linenos, numbersep = 3mm}
+}
+device = torch.device('mps' if platform.system() == 'Darwin' else 'cuda' if torch.cuda.is_available() else 'cpu')
+\end{tcblisting}
+
+\paragraph*{损失函数}~{}
+
+\begin{tcblisting}{
+    listing engine = minted,
+    boxrule = 0.1mm,
+    colback = blue!5!white,
+    colframe = blue!75!black,
+    listing only,
+    left = 5mm,
+    minted language = python,
+    minted style = paraiso-dark,
+    minted options = {bgcolor = black, fontsize = \small, breaklines, autogobble, linenos, numbersep = 3mm}
+}
+criterion = torch.nn.CrossEntropyLoss()
+\end{tcblisting}
+
+\paragraph*{优化器}~{}
+
+\begin{tcblisting}{
+    listing engine = minted,
+    boxrule = 0.1mm,
+    colback = blue!5!white,
+    colframe = blue!75!black,
+    listing only,
+    left = 5mm,
+    minted language = python,
+    minted style = paraiso-dark,
+    minted options = {bgcolor = black, fontsize = \small, breaklines, autogobble, linenos, numbersep = 3mm}
+}
+optimizer = torch.optim.Adam(
+    params = model.parameters(),
+    lr = 1e-3,
+    eps = 1e-8
+)
+\end{tcblisting}
+
+\paragraph*{超参数}~{}
+
+\begin{tcblisting}{
+    listing engine = minted,
+    boxrule = 0.1mm,
+    colback = blue!5!white,
+    colframe = blue!75!black,
+    listing only,
+    left = 5mm,
+    minted language = python,
+    minted style = paraiso-dark,
+    minted options = {bgcolor = black, fontsize = \small, breaklines, autogobble, linenos, numbersep = 3mm}
+}
+epoch = 1000
+m = 128
+h = 12
+n = 8
+\end{tcblisting}
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics*[scale=0.16]{./fig/demo.png}
+%     \caption{训练结果}
+% \end{figure}
+
+
+
+\section{遇到的问题与思考}
+
+\paragraph*{问题一}~{Tokenizer}
+
+英文句子天然以空白分隔开来, 因此很简单地就能将它们分成若干个单词, 形成 LLM 输入的 token. 但中文句子字符串是连续的, 给定的中文数据集是已经处理好, 具备空白的句子, 然而真实情况下是未经处理的连续文本字符串. GitHub 有一个 Jieba 项目, 适用于中文句子分词, 可以借鉴马尔可夫链 Viterbi 算法进行分词.
+
+\paragraph*{问题二}~{Serialization}
+
+一句话是具有一定 token 长度的, 倘若既定的 target 输出是第 $n$ 个 token, 但超出了句子总长度, 这样是无法构成 $(\bm{x},\ \bm{y},\ {\rm target})$ 元组. 一种处理方式是过滤掉超过句子总长度太短的, 还有种方式是进行 padding 模式. 譬如, 句子头部增加标记符 |<BOS>|, 句子尾部增加标记符 |<EOS>|, 使得总长度达到 $n$, 构成可训练的元组 $(\bm{x},\ \bm{y},\ {\rm target})$.
+
+
+
+\end{document}
